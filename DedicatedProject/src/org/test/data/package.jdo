@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jdo xmlns="http://java.sun.com/xml/ns/jdo/jdo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/jdo
+        http://java.sun.com/xml/ns/jdo/jdo_3_0.xsd">
+	<package name="org.test.data">
+		<class name="User" detachable="true">
+			<field name="key" persistence-modifier="persistent"
+				value-strategy="increment" primary-key="true">
+				<column length="32" jdbc-type="VARCHAR" />
+			</field>
+			
+			<field name="emails" persistence-modifier="persistent" default-fetch-group="false">
+				<join />
+			</field>
+		</class>
+		
+		<class name="Email" detachable="true">
+			<field name="key" persistence-modifier="persistent"
+				value-strategy="increment" primary-key="true">
+				<column length="32" jdbc-type="VARCHAR" />
+			</field>
+			<field name="email" persistence-modifier="persistent" />
+		</class>
+	</package>
+</jdo>

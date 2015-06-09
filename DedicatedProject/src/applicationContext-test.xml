@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd   
+	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd   
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd 
+	http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd 
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+
+
+	<bean id="pmf"
+		class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean">
+		<property name="jdoProperties">
+			<props>
+
+				<!-- Below parameters can be passed as environment variables to the server. 
+					In Eclipse: Open the server configuration, click "open launch configuration", 
+					go to tab "arguments" and add the following "-DJDBC_CONNECTION_STRING=jdbc:mysql://localhost/privetesting1 
+					-DPARAM1=root -DPARAM2=mypassword" -->
+				<prop key="javax.jdo.option.ConnectionURL">jdbc:mysql://192.168.1.104/dedicatedproject?characterEncoding=utf-8
+				</prop>
+				<prop key="javax.jdo.option.ConnectionUserName">root</prop>
+				<prop key="javax.jdo.option.ConnectionPassword"></prop>
+				<prop key="javax.jdo.PersistenceManagerFactoryClass">org.datanucleus.api.jdo.JDOPersistenceManagerFactory
+				</prop>
+				<prop key="javax.jdo.option.ConnectionDriverName">com.mysql.jdbc.Driver</prop>
+				<prop key="datanucleus.NontransactionalRead">true</prop>
+				<prop key="datanucleus.NontransactionalWrite">false</prop>
+				<prop key="datanucleus.schema.autoCreateAll">false</prop>
+				<prop key="datanucleus.schema.validateTables">false</prop>
+				<prop key="datanucleus.schema.validateConstraints">false</prop>
+				<prop key="datanucleus.Optimistic">false</prop>
+				<prop key="datanucleus.ServerTimeZoneID">GMT</prop>
+				<prop key="datanucleus.detachmentFields">load-unload-fields</prop>
+				<prop key="datanucleus.metadata.xml.validate">true</prop>
+				<!-- <prop key="datanucleus.cache.level1.type">strong</prop> <prop key="datanucleus.cache.level2.type">none</prop> -->
+				<prop key="datanucleus.cache.level2.type">none</prop>
+				<prop key="javax.jdo.option.Multithreaded">true</prop>
+				<prop key="datanucleus.persistenceByReachabilityAtCommit">false</prop>
+				<prop key="datanucleus.storeManagerType">rdbms</prop>
+
+				<!-- This will enable DN to use UPDATE query -->
+				<prop key="datanucleus.query.sql.allowAll">true</prop>
+
+
+				<!-- set these to prevent table initialization error -->
+				<prop key="datanucleus.PersistenceUnitLoadClasses">true</prop>
+				<prop key="datanucleus.autoStartMechanism">SchemaTable</prop>
+
+				<!-- Turn bulk fetch off -->
+				<prop key="datanucleus.multivaluedFetch">none</prop>
+
+			</props>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+		<property name="persistenceManagerFactory">
+			<ref local="pmf" />
+		</property>
+	</bean>
+
+	<tx:annotation-driven />
+
+	<bean id="persistenceService" class="org.test.service.PersistenceService">
+		<property name="persistenceManagerFactory">
+			<ref local="pmf" />
+		</property>
+	</bean>
+
+</beans>
+
+

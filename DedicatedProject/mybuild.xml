@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="datanucleus_enhance" name="DedicatedProject">
+	<property name="db.jdbc.string" value="jdbc:mysql://192.168.1.104/dedicatedproject?characterEncoding=utf-8" />
+	<property name="db.username" value="root" />
+	<property name="db.password" value="" />
+	
+	<target name="datanucleus_enhance">
+
+		<echo />
+		<echo> ###########################</echo>
+		<echo> ### Datanucleus Enhance ###</echo>
+		<echo> ###########################</echo>
+
+		<!-- Copy JDO files to classes directory -->
+		<copy overwrite="true" todir="build">
+			<fileset dir="src/">
+				<include name="**/*.jdo" />
+			</fileset>
+		</copy>
+
+		<!-- Run enhancer -->
+		<taskdef name="datanucleusenhancer" classpathref="DedicatedProject.web.classpath" classname="org.datanucleus.enhancer.EnhancerTask" />
+		<datanucleusenhancer classpathref="DedicatedProject.web.classpath" dir="build" failonerror="true" verbose="true">
+		</datanucleusenhancer>
+
+	</target>
+	
+	<target name="datanucleus_schema_tool" depends="datanucleus_enhance">
+
+		<echo />
+		<echo> ###############################</echo>
+		<echo> ### Datanucleus Schema Tool ###</echo>
+		<echo> ###############################</echo>
+
+		<taskdef name="schematool" classpathref="DedicatedProject.web.classpath" classname="org.datanucleus.store.schema.SchemaToolTask" />
+		<schematool failonerror="true" verbose="false" mode="create">
+			<classpath>
+				<path refid="schematool.classpath" />
+			</classpath>
+			<fileset dir="build">
+				<include name="**/*.jdo" />
+			</fileset>
+			<sysproperty key="datanucleus.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
+			<sysproperty key="datanucleus.ConnectionURL" value="${db.jdbc.string}" />
+			<sysproperty key="datanucleus.ConnectionUserName" value="${db.username}" />
+			<sysproperty key="datanucleus.ConnectionPassword" value="${db.password}" />
+		</schematool>
+	</target>
+	
+	<path id="DedicatedProject.web.classpath">
+		<pathelement location="build" />
+		<fileset dir="lib">
+			<exclude name="**/slf4j*.jar" />
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="schematool.classpath">
+		<pathelement location="build" />
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+</project>
