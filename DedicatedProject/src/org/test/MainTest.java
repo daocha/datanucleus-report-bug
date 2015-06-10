@@ -44,8 +44,6 @@ public class MainTest {
 
 		persistenceService.flush();
 
-		// User user = persistenceService.getUser("91");
-
 		// load old email list from attached object
 		ArrayList<Email> oldEmailList = user.getEmails();
 
