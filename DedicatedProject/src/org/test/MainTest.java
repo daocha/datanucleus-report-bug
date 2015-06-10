@@ -32,36 +32,53 @@ public class MainTest {
 		User user = new User();
 
 		ArrayList<Email> emailList = new ArrayList<Email>();
+		Email email = new Email();
+		email.setEmail("ray@example.com");
+		emailList.add(email);
 
 		user.setEmails(emailList);
+
+		assertTrue(emailList == user.getEmails());
 
 		persistenceService.persist(user);
 
 		persistenceService.flush();
 
-		User userDB = persistenceService.getUser(user.getKey());
+		// User user = persistenceService.getUser("91");
 
 		// load old email list from attached object
-		ArrayList<Email> oldEmailList = userDB.getEmails();
+		ArrayList<Email> oldEmailList = user.getEmails();
 
 		// create a new list
 		ArrayList<Email> newEmailList = new ArrayList<Email>();
-		userDB.setEmails(newEmailList);
+		user.setEmails(newEmailList);
 
-		persistenceService.persist(userDB);
+		/*
+		 * ######## Normally, as java developers, we think newEmailList is
+		 * definitely equivalent to user.getEmails(). But the reality is not. It
+		 * happens very often if someone just sets a new empty list to a field
+		 * and in the later stage he processes some business logic and adds some
+		 * data to that list. From their perspective, it's the same reference so
+		 * they may not have the consciousness to call that setter again.
+		 * ########
+		 */
+		assertTrue(newEmailList == user.getEmails());
+
+		persistenceService.persist(user);
 
 		persistenceService.flush();
 
 		// add a new email to old email list, theoretically it should not affect
 		// the user.emails
 		oldEmailList.add(new Email());
+		newEmailList.add(new Email());
 
-		assertTrue(oldEmailList.size() == 1);
+		assertTrue(oldEmailList.size() == 2);
 
-		assertTrue(newEmailList.size() == 0);
+		assertTrue(newEmailList.size() == 1);
 
 		// ### why this fails? ###
-		assertTrue(userDB.getEmails().size() == 0);
+		assertTrue(user.getEmails().size() == 1);
 
 	}
 
